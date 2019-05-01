@@ -1,16 +1,31 @@
 const express = require('express');
 const { ApolloServer, gql } = require('apollo-server-express');
 
+const colors = require('./data.js').colors;
+
 const typeDefs = gql`
     type Query {
-        hello: String
+        hello: String,
+        colors: [Color],
+    }
+
+    type Color {
+        color: String,
+        category: String,
+        code: ColorCode
+    }
+
+    type ColorCode {
+        rgba: [Int],
+        hex: String
     }
 `;
 
 const resolvers = {
     Query: {
         hello: () => 'Hello, World!',
-    }
+        colors: () => colors,
+    },
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
