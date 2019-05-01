@@ -1,14 +1,23 @@
 {
   "name": "graphql-sandbox",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon ./src/index.js",
+    "test": "echo \"Warn: no test specified\" && exit 0",
+    "clean": "rm -rf node_modules/aws-sdk && modclean -rn default:safe,default:caution",
+    "zip": "python ../build/zip.py ./ ./build/deploy.zip",
+    "deploy": "aws lambda update-function-code --function-name <SOME_NAME> --zip-file fileb://build/deploy.zip --region <TARGET_REGION>"
+  },
   "dependencies": {
     "apollo-server-express": "^2.4.8",
     "express": "^4.16.4",
     "graphql": "^14.2.1"
   },
   "devDependencies": {
+    "modclean": "^3.0.0-beta.1",
+    "modclean-patterns-default": "^1.1.2",
     "nodemon": "^1.19.0"
   }
 }
