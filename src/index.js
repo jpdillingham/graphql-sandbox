@@ -12,6 +12,7 @@ const typeDefs = gql`
         colors: [Color],
         color(category: String): [Color],
         employees: [Employee],
+        employee(employee_id: Int): Employee
     }
 
     type Color {
@@ -30,19 +31,7 @@ const typeDefs = gql`
         last_name: String,
         first_name: String,
         title: String,
-        title_of_courtesy: String,
-        birth_date: String,
-        hire_date: String,
-        address: String,
-        city: String,
-        region: String,
-        postal_code: Int,
-        country: String,
-        home_phone: String,
-        extension: Int,
-        notes: String,
-        reports_to: Int,
-        photo_path: String
+        reports_to: Employee
     }    
 `;
 
@@ -54,10 +43,31 @@ const resolvers = {
             colors.filter(c => c.category === args.category)
         ),
         employees: async () => {
-            var data = await pool.query('SELECT * FROM employees');
-            return data.rows;
-        }
+            var data = await pool.query(`
+            select 
+                json_build_object(
+                    \'employee_id\', e1.employee_id,
+                    \'first_name\', e1.first_name, 
+                    \'last_name\', e1.last_name, 
+                    \'title\', e1.title,
+                    \'reports_to\', json_build_object(
+                        \'employee_id\', e2.employee_id,
+                        \'first_name\', e2.first_name,
+                        \'last_name\', e2.last_name,
+                        \'title\', e2.title
+                    )
+                )
+            from employees e1
+            inner join employees e2 on e1.reports_to = e2.employee_id`);
+            data = data.rows.map(r => r.json_build_object);
+            return data;
+        },
+        employee: async (parent, args, context, info) => {
+            var data = await pool.query(`SELECT * FROM employees WHERE employee_id = ${args.employee_id}`);
+            return data.rows[0];
+        },
     },
+
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
