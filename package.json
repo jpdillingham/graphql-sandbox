@@ -11,7 +11,7 @@
     "deploy": "aws lambda update-function-code --function-name <SOME_NAME> --zip-file fileb://build/deploy.zip --region <TARGET_REGION>"
   },
   "dependencies": {
-    "apollo-server-express": "^2.4.8",
+    "apollo-server-express": "^2.14.2",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "graphql": "^14.2.1",
